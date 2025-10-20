@@ -3,6 +3,11 @@ use = "Rolv-Apneseth/starship"
 rev = "a63550b"
 hash = "c2021386289a0cbb3e152a052f67c177"
 
+[[plugin.deps]]
+use = "Ape/smart-enter"
+rev = "7b84c89"
+hash = "43eb1a1f2291795fb5b0b2ce1206ebee"
+
 [[flavor.deps]]
 use = "Mintass/rose-pine"
 rev = "8343340"

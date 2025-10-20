@@ -6,6 +6,9 @@ if status is-interactive
   fish_config theme choose Rosé\ Pine
     # Commands to run in interactive sessions can go here
   abbr c bat  
+  abbr cm chezmoi
+  abbr cma chezmoi add
+  abbr cmdd chezmoi diff
 	abbr d ddgr -n2
 	abbr dw BROWSER=w3m ddgr -n2
   abbr l eza --icons --git
@@ -14,9 +17,13 @@ if status is-interactive
 	abbr gaa git add --all
 	abbr gco git checkout
   abbr gsc git switch -c
-  abbr pi pkg -y i 
 
   fzf --fish | source
 	starship init fish | source
   zoxide init fish | source
+  {{ if eq .chezmoi.os "android" }}
+  abbr pi pkg -y i 
+  {{ else if eq .chezmoi.os.release "void" }}
+  abbr pi sudo xbps-install -Sy
+  {{ end }}
 end
