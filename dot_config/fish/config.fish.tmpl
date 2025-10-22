@@ -8,6 +8,8 @@ if status is-interactive
   abbr c bat  
   abbr cm chezmoi
   abbr cma chezmoi add
+  abbr cmaa chezmoi apply
+  abbr cme chezmoi edit
   abbr cmdd chezmoi diff
 	abbr d ddgr -n2
 	abbr dw BROWSER=w3m ddgr -n2
@@ -25,5 +27,6 @@ if status is-interactive
   abbr pi pkg -y i 
   {{ else if eq .chezmoi.os.release "void" }}
   abbr pi sudo xbps-install -Sy
+  abbr pr xbps-remove -R 
   {{ end }}
 end
