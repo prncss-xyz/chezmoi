@@ -1,0 +1,3 @@
+bindsym $mod+t exec ghostty
+exec ghostty --title=scratchpad
+exec ghostty

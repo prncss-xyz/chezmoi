@@ -1,0 +1,138 @@
+#!/usr/bin/env sh
+
+launch() {
+
+	FPATH="${1:-.}"
+	echo "$FPATH"
+
+	# if it is a directory, open the oldest file of file manager if empty
+	if [ -d "$FPATH" ]; then
+		FPATH1="$(fd -a -tf -ts . "$FPATH" --exec-batch ls -t | tail -1)"
+		if [ -z "$FPATH1" ]; then
+			$TERMINAL -e xplr "$FPATH"
+			exit 0
+		fi
+		FPATH="$FPATH1"
+	fi
+
+	case "${FPATH}" in
+	http://* | https://*)
+		browser "${FPATH}" &
+		return
+		;;
+	esac
+
+	#TODO: epub, office
+
+	FNAME=$(basename "$FPATH")
+	DNAME=$(dirname "$FPATH")
+	EDITOR="${VISUAL:-${EDITOR:-vi}}"
+	PAGER="${PAGER:-less -R}"
+	ext="${FNAME##*.}"
+	if [ -n "$ext" ]; then
+		ext="$(printf "%s" "${ext}" | tr '[:upper:]' '[:lower:]')"
+	fi
+
+	case "${ext}" in
+	# md | markdown)
+	# 	browser "$(mdopen "${FPATH}")" &
+	# 	return
+	# 	;;
+	htm | html | pdf)
+		browser "${FPATH}" &
+		return
+		;;
+		## text
+	txt | jsx | tsx)
+		nvr_do "${FPATH}"
+		return
+		;;
+		## Ebook
+	azw3)
+		# com.github.johnfactotum.Foliate "${FPATH}" &
+		ebook-reader "${FPATH}" &
+		return
+		;;
+	docx | doc | rtf | abw)
+		# libreoffice "${FPATH}" &
+		koreader "${FPATH}" &
+		return
+		;;
+	epub)
+		com.github.johnfactotum.Foliate "${FPATH}" &
+		return
+		;;
+	esac
+
+	MIMETYPE="$(file -bL --mime-type -- "${FPATH}")"
+	case "${MIMETYPE}" in
+	inode/x-empty)
+		nvr_do "${FPATH}"
+		return
+		;;
+
+	## Image
+	image/*)
+		imv -n "${FPATH}" "${DNAME}" &
+		# imv-folder "${FPATH}" &
+		return
+		;;
+
+	## Manpages
+	text/troff)
+		hman -l "${FPATH}"
+		return
+		;;
+
+	## Text/html
+	text/html)
+		browser "${FPATH}" &
+		return
+		;;
+
+	## PDF
+	application/pdf)
+		browser "${FPATH}" &
+		# evince "${FPATH}" &
+		return
+		;;
+
+	## Audio
+	audio/*)
+		celluloid "${FPATH}" &
+		return
+		;;
+
+	## Video
+	video/*)
+		celluloid "${FPATH}" &
+		return
+		;;
+
+	## Libreoffice
+	application/vnd.oasis.opendocument.* | \
+		application/vnd.openxmlformats-officedocument.*)
+		libreoffice "${FPATH}" &
+		return
+		;;
+
+		## Ebook
+	application/x-mobipocket-ebook | \
+		application/epub+zip)
+		com.github.johnfactotum.Foliate "${FPATH}" &
+		return
+		;;
+
+	## Text
+	text/* | */xml | */json)
+		nvr_do "${FPATH}"
+		return
+		;;
+	esac
+	echo unknown mimetype "$MIMETYPE" >/dev/stderr
+	exit 1
+}
+
+launch "$1"
+echo "$!"
+# swaymsg [pid="$!"] focus

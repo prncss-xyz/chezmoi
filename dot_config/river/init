@@ -1,0 +1,219 @@
+#!/bin/sh
+
+# this will enable screen share
+# systemctl --user import-environment WAYLAND_DISPLAY
+
+# https://git.sr.ht/~leon_plickat/river-config/tree/master/item/river/init
+# Helper fuction to only spawn a program when no instance of it is running
+# already, so init can be re-run without all widgets being duplicated.
+spawn_once() {
+	pgrep -f "${1}" >/dev/null || riverctl spawn "${*}"
+}
+
+spawn_once way-displays >/tmp/way-displays.${XDG_VTNR}.${USER}.log 2>&1
+# spawn_once darkman run
+
+UP=K
+DOWN=J
+LEFT=L
+RIGHT=semicolon
+NEXT=N
+PREVIOUS=P
+
+O_UP=I
+O_DOWN=U
+O_LEFT=O
+O_RIGHT=P
+
+riverctl keyboard-layout -options "caps:escape" ca
+
+riverctl map normal Super W close
+riverctl map normal Super+Control X spawn waylock
+riverctl map normal Super+Control R spawn .config/river/init
+riverctl map normal Super F toggle-fullscreen
+
+# riverctl map normal Super $UP focus-view up
+# riverctl map normal Super $DOWN focus-view down
+# riverctl map normal Super $LEFT focus-view left
+# riverctl map normal Super $RIGHT focus-view right
+riverctl map normal Super $UP focus-view next
+riverctl map normal Super $DOWN focus-view previous
+riverctl map normal Super+Shift $UP swap next
+riverctl map normal Super+Shift $DOWN swap previous
+riverctl map normal Super Return zoom
+
+riverctl map normal Super Period focus-output next
+riverctl map normal Super Comma focus-output previous
+riverctl map normal Super+Shift Period send-to-output next
+riverctl map normal Super+Shift Comma send-to-output previous
+
+riverctl declare-mode adjust
+riverctl map normal Super R enter-mode adjust
+riverctl map adjust None Escape enter-mode normal
+riverctl map adjust None $LEFT send-layout-cmd rivertile "main-ratio -0.05"
+riverctl map adjust None $RIGHT send-layout-cmd rivertile "main-ratio +0.05"
+riverctl map adjust None $UP send-layout-cmd rivertile "main-count +1"
+riverctl map adjust None $DOWN send-layout-cmd rivertile "main-count -1"
+riverctl map adjust None $O_UP send-layout-cmd rivertile "main-location top"
+riverctl map adjust None $O_RIGHT send-layout-cmd rivertile "main-location right"
+riverctl map adjust None $O_DOWN send-layout-cmd rivertile "main-location bottom"
+riverctl map adjust None $O_LEFT send-layout-cmd rivertile "main-location left"
+
+riverctl declare-mode float
+riverctl map normal Super Q enter-mode float
+riverctl map float None Escape enter-mode normal
+# toggle
+riverctl map float Super Space toggle-float
+# move
+riverctl map float None $LEFT move left 100
+riverctl map float None $DOWN move down 100
+riverctl map float None $UP move up 100
+riverctl map float None $RIGHT move right 100
+# resize
+riverctl map float Shift $LEFT resize horizontal -100
+riverctl map float Shift $DOWN resize vertical 100
+riverctl map float Shift $UP resize vertical -100
+riverctl map float Shift $RIGHT resize horizontal 100
+# snap
+riverctl map float Super+Alt+Control $O_LEFT snap left
+riverctl map float Super+Alt+Control $O_DOWN snap down
+riverctl map float Super+Alt+Control $O_UP snap up
+riverctl map float Super+Alt+Control $O_RIGHT snap right
+
+riverctl map-pointer normal Super BTN_LEFT move-view
+riverctl map-pointer normal Super BTN_RIGHT resize-view
+riverctl map-pointer normal Super BTN_MIDDLE toggle-float
+
+# Declare a passthrough mode. This mode has only a single mapping to return to
+# normal mode. This makes it useful for testing a nested wayland compositor
+riverctl declare-mode passthrough
+riverctl map normal Super F11 enter-mode passthrough
+riverctl map passthrough Super F11 enter-mode normal
+
+# Various media key mapping examples for both normal and locked mode which do
+# not have a modifier
+for mode in normal locked; do
+	# Control pulse audio volume with pamixer (https://github.com/cdemoulins/pamixer)
+	riverctl map $mode None XF86AudioRaiseVolume spawn 'pamixer -i 5'
+	riverctl map $mode None XF86AudioLowerVolume spawn 'pamixer -d 5'
+	riverctl map $mode None XF86AudioMute spawn 'pamixer --toggle-mute'
+
+	# Control MPRIS aware media players with playerctl (https://github.com/altdesktop/playerctl)
+	riverctl map $mode None XF86AudioMedia spawn 'playerctl play-pause'
+	riverctl map $mode None XF86AudioPlay spawn 'playerctl play-pause'
+	riverctl map $mode None XF86AudioPrev spawn 'playerctl previous'
+	riverctl map $mode None XF86AudioNext spawn 'playerctl next'
+
+	riverctl map $mode None XF86MonBrightnessUp spawn 'brightnessctl set 2%+'
+	riverctl map $mode None XF86MonBrightnessDown spawn 'brightnessctl set 2%-'
+
+	riverctl map $mode Alt+Control delete spawn reboot
+	riverctl map $mode Alt+Control backspace spawn reboot
+	riverctl map $mode Super+Control P spawn poweroff
+	riverctl map $mode Super+Control E exit
+done
+
+riverctl map normal Control+Super O spawn easyeffects
+riverctl declare-mode audio
+riverctl map normal Super O enter-mode audio
+riverctl map audio None Escape enter-mode normal
+riverctl map audio None $UP spawn 'pamixer -i 5'
+riverctl map audio None $DOWN spawn 'pamixer -d 5'
+riverctl map audio Shif $UP spawn 'pamixer -i 15'
+riverctl map audio Shif $DOWN spawn 'pamixer -d 15'
+riverctl map audio None M spawn 'pamixer --toggle-mute'
+riverctl map audio None space spawn 'playerctl play-pause'
+riverctl map audio None $LEFT spawn 'playerctl previous'
+riverctl map audio None $RIGHT spawn 'playerctl next'
+
+riverctl declare-mode lumino
+riverctl map normal Super I enter-mode lumino
+riverctl map lumino None Escape enter-mode normal
+riverctl map lumino None $UP spawn 'brightnessctl set 2%+'
+riverctl map lumino None $DOWN spawn 'brightnessctl set 2%-'
+riverctl map lumino Shift $UP spawn 'brightnessctl set 100%'
+riverctl map lumino Shift $DOWN spawn 'brightnessctl set 0%'
+
+riverctl background-color 0x002b36
+riverctl border-color-focused 0x93a1a1
+riverctl border-color-unfocused 0x586e75
+
+riverctl hide-cursor timeout 1000
+riverctl hide-cursor when-typing enabled
+
+riverctl set-repeat 50 300
+
+for i in $(seq 1 9); do
+	tags=$((1 << ("$i" - 1)))
+	riverctl map normal Super "$i" set-focused-tags $tags
+	riverctl map normal Control+Super "$i" toggle-focused-tags $tags
+	riverctl map normal Super+Shift "$i" set-view-tags $tags
+	# riverctl map normal Super+Shift "$i" set-view-tags $tags
+done
+
+riverctl map normal Super A focus-previous-tags
+riverctl map normal Super+Shift A send-to-previous-tags
+
+# Super+0 to focus all tags
+# Super+Shift+0 to tag focused view with all tags
+all_tags=$(((1 << 32) - 1))
+riverctl map normal Super 0 set-focused-tags $all_tags
+riverctl map normal Super+Shift 0 set-view-tags $all_tags
+
+## rule-add wont work until v.0.3
+## lswt to list clients
+# riverctl rule-add -app-id foot tags $((1 << (1 - 1)))
+# riverctl rule-add -app-id footclient tags $((1 << (1 - 1)))
+# riverctl rule-add -app-id neovide tags $((1 << (2 - 1)))
+# riverctl rule-add -app-id firefox tags $((1 << (3 - 1)))
+# riverctl rule-add -app-id chromium tags $((1 << (3 - 1)))
+# riverctl rule-add -app-id org.kde.kdeconnect.* tags $((1 << (9 - 1)))
+# riverctl rule-add -app-id com.github.wwmm.easyeffects tags $((1 << (9 - 1)))
+# riverctl rule-add -app-id org.pipewire.Helvum tags $((1 << (9 - 1)))
+riverctl rule-add -app-id popup float
+riverctl rule-add -app-id imv ssd
+riverctl rule-add -app-id firefox ssd
+riverctl rule-add -title Picture-in-Picture float
+riverctl rule-add -title term-prompt float
+riverctl rule-add -app-id pavucontrol float
+riverctl rule-add -app-id wlroot ssd
+riverctl rule-add -app-id org.freedesktop.Xwayland float
+riverctl rule-add -app-id org.freedesktop.Xwayland ssd
+
+riverctl default-layout rivertile
+
+riverctl map normal Super D spawn fuzzel
+riverctl map normal Super E spawn neovide
+riverctl map normal Super T spawn footclient
+riverctl map normal Super U spawn "footclient yazi"
+riverctl map normal Super Y spawn .local/bin/browser
+riverctl map normal Super P spawn tessen
+riverctl map normal Super N spawn "makoctl dismiss"
+riverctl map normal Super+Shift N spawn "makoctl dismiss --all"
+riverctl map normal Super V spawn "footclient mvl imv"
+
+spawn_once rivertile -view-padding 0 -outer-padding 0
+spawn_once foot --server
+spawn_once set
+spawn_once .local/bin/browser
+spawn_once .local/bin/mvf-term read
+spawn_once .local/bin/mvl-add read
+spawn_once .local/bin/mvl-rm read
+spawn_once /usr/bin/kdeconnectd
+spawn_once mako
+spawn_once river-tag-overlay
+spawn_once .local/bin/setbg
+spawn_once swayidle -w \
+	timeout 300 'sh -c "brightnessctl --save; brightnessctl set 0"' resume 'brightnessctl --restore' \
+	timeout 330 'waylock' \
+	before-sleep 'waylock'
+spawn_once syncthing serve --no-browser --no-restart --logflags=0
+spawn_once udiskie
+spawn_once waybar
+
+dbus-update-activation-environment --systemd --all
+gpg-connect-agent /bye
+
+# not working as a service
+# spawn_once wlsunset -l 45.5 -L -73.
+wlsunset -S 07:00 -s 16:00

@@ -1,0 +1,4 @@
+bindsym $mod+t exec $term
+exec foot --server
+exec sh -c 'sleep 1; footclient --title=scratchpad'
+exec sh -c 'sleep 1; footclient'
