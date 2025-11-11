@@ -1,0 +1,9 @@
+{{- if eq .chezmoi.os "linux" -}}
+set -x LANG "C.UTF-8"
+set -x LC_CTYPE "C.UTF-8"
+set -x GRIM_DEFAULT_DIR $HOME/Media/Pictures/Captures
+set -x PERSONAL $HOME/Personal
+
+abbr d ddgr
+abbr dw BROWSER=w3m ddgr
+{{- end }}

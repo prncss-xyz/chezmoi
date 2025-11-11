@@ -1,0 +1,9 @@
+{{- if eq .chezmoi.os "android" -}}
+set -x BROWSER termux-open-url
+set -x DISPLAY :1
+set -x EDITOR nvim
+set -x PERSONAL "/data/data/com:termux/files/home/storage/shared/Personal"
+
+abbr d ddgr -n2
+abbr dw BROWSER=w3m ddgr -n2
+{{- end }}
