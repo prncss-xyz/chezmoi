@@ -1,6 +1,6 @@
 #!/usr/bin/sh
 
-if [ -d "/data/data/com.termux/files/usr" ]; then
+if [ -d "/data/data/com.termux" ]; then
   echo "na"
   exit 0
 fi
