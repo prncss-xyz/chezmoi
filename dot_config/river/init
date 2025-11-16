@@ -204,10 +204,11 @@ spawn_once /usr/bin/kdeconnectd
 spawn_once mako
 spawn_once river-tag-overlay
 spawn_once .local/bin/setbg
+
 spawn_once swayidle -w \
-	timeout 300 'sh -c "brightnessctl --save; brightnessctl set 0"' resume 'brightnessctl --restore' \
-	timeout 330 'waylock' \
-	before-sleep 'waylock'
+         timeout 300 'waylock -fork-on-lock' \
+         timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
+         before-sleep 'waylock -fork-on-lock'
 
 spawn_once /usr/bin/gnome-keyring-daemon --start
 spawn_once syncthing serve --no-browser --no-restart --logflags=0
