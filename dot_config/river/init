@@ -27,9 +27,9 @@ O_RIGHT=P
 
 riverctl keyboard-layout -options "caps:escape" ca
 
-riverctl map normal Super W close
+riverctl map normal Super+Ctrl Q close
 riverctl map normal Super+Control X spawn waylock
-riverctl map normal Super+Control R spawn .config/river/init
+riverctl map normal Super+Control C spawn .config/river/init
 riverctl map normal Super F toggle-fullscreen
 
 # riverctl map normal Super $UP focus-view up
@@ -87,8 +87,8 @@ riverctl map-pointer normal Super BTN_MIDDLE toggle-float
 # Declare a passthrough mode. This mode has only a single mapping to return to
 # normal mode. This makes it useful for testing a nested wayland compositor
 riverctl declare-mode passthrough
-riverctl map normal Super F11 enter-mode passthrough
-riverctl map passthrough Super F11 enter-mode normal
+riverctl map normal Super F10 enter-mode passthrough
+riverctl map passthrough Super F10 enter-mode normal
 
 # Various media key mapping examples for both normal and locked mode which do
 # not have a modifier
@@ -117,14 +117,15 @@ riverctl map normal Control+Super O spawn easyeffects
 riverctl declare-mode audio
 riverctl map normal Super O enter-mode audio
 riverctl map audio None Escape enter-mode normal
-riverctl map audio None $UP spawn 'pamixer -i 5'
-riverctl map audio None $DOWN spawn 'pamixer -d 5'
-riverctl map audio Shif $UP spawn 'pamixer -i 15'
-riverctl map audio Shif $DOWN spawn 'pamixer -d 15'
+riverctl map audio None $UP spawn 'pactl set-sink-volume @DEFAULT_SINK@ +4%'
+riverctl map audio None $DOWN spawn 'pactl set-sink-volume @DEFAULT_SINK@ -4%'
+riverctl map audio Shif $UP spawn 'pactl set-sink-volume @DEFAULT_SINK@ +12%'
+riverctl map audio Shif $DOWN spawn 'pactl set-sink-volume @DEFAULT_SINK@ -12%'
 riverctl map audio None M spawn 'pamixer --toggle-mute'
 riverctl map audio None space spawn 'playerctl play-pause'
 riverctl map audio None $LEFT spawn 'playerctl previous'
 riverctl map audio None $RIGHT spawn 'playerctl next'
+riverctl map audio None x spawn 'playerctl stop'
 
 riverctl declare-mode lumino
 riverctl map normal Super I enter-mode lumino
@@ -187,7 +188,7 @@ riverctl map normal Super E spawn neovide
 riverctl map normal Super T spawn footclient
 riverctl map normal Super U spawn "footclient yazi"
 riverctl map normal Super Y spawn .local/bin/browser
-riverctl map normal Super P spawn tessen
+riverctl map normal Super P spawn "PASSWORD_STORE_DIR=$HOME/Personal/pass/ tessen"
 riverctl map normal Super N spawn "makoctl dismiss"
 riverctl map normal Super+Shift N spawn "makoctl dismiss --all"
 riverctl map normal Super V spawn "footclient mvl imv"
@@ -207,11 +208,12 @@ spawn_once swayidle -w \
 	timeout 300 'sh -c "brightnessctl --save; brightnessctl set 0"' resume 'brightnessctl --restore' \
 	timeout 330 'waylock' \
 	before-sleep 'waylock'
+
+spawn_once /usr/bin/gnome-keyring-daemon --start
 spawn_once syncthing serve --no-browser --no-restart --logflags=0
 spawn_once udiskie
 spawn_once waybar
 
-dbus-update-activation-environment --systemd --all
 gpg-connect-agent /bye
 
 # not working as a service

@@ -114,10 +114,10 @@ bindsym --locked XF86AudioLowerVolume exec pactl set-sink-volume \@DEFAULT_SINK@
 bindsym --locked XF86AudioRaiseVolume exec pactl set-sink-volume \@DEFAULT_SINK@ +5%
 bindsym --locked XF86AudioMicMute exec pactl set-source-mute \@DEFAULT_SOURCE@ toggle
 mode audio {
-  bindsym space exec playerctl --player playerctld play-pause; mode default
-  bindsym $left exec playerctl --player playerctld next; mode default
-  bindsym $right exec playerctl --player playerctld previous; mode default
-  bindsym x exec playerctl --player playerctld stop
+  bindsym space exec playerctl play-pause; mode default
+  bindsym $left exec playerctl next; mode default
+  bindsym $right exec playerctl previous; mode default
+  bindsym x exec playerctl stop
 
   bindsym m exec pactl set-sink-mute @DEFAULT_SINK@ toggle; mode default
   bindsym $up exec pactl set-sink-volume @DEFAULT_SINK@ +4% 
@@ -137,8 +137,8 @@ bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
 mode lumino {
   bindsym $up exec brightnessctl set 2%+
   bindsym $down exec brightnessctl set 2%-
-  bindsym shift+$up exec brightnessctl set 12%+
-  bindsym shift+$down exec brightnessctl set 12%-
+  bindsym shift+$up exec brightnessctl set 100%
+  bindsym shift+$down exec brightnessctl set 0%
   bindsym ctrl+c mode default
   bindsym escape mode default
   bindsym return mode default
@@ -180,7 +180,6 @@ exec syncthing serve --no-browser --no-restart --logflags=0
 exec pipewire
 exec pactl set-sink-volume @DEFAULT_SINK@ 30%
 exec pactl set-sink-mute @DEFAULT_SINK@ 0
-# exec eval gnome-keyring-daemon --components=ssh,secrets,pkcs11 --start
 exec /usr/bin/gnome-keyring-daemon --start
 
 exec waybar
