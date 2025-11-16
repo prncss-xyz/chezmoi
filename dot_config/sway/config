@@ -32,11 +32,11 @@ bindsym $mod+Shift+q kill
 floating_modifier $mod normal
 
 bindsym $mod+Shift+c reload
-bindsym $mod+Shift+e exec swaymsg exit
-bindsym $mod+ctrl+l exec "swaylock"
-bindsym ctrl+alt+delete exec "loginctl reboot"
-bindsym $mod+ctrl+backspace exec "loginctl reboot"
-bindsym $mod+ctrl+p exec "loginctl poweroff"
+bindsym $mod+Shift+e exit
+bindsym $mod+ctrl+q exec swaylock
+bindsym ctrl+alt+delete exec loginctl reboot
+bindsym $mod+ctrl+backspace exec loginctl reboot
+bindsym $mod+ctrl+p exec loginctl poweroff
 
 bindsym $mod+a focus parent
 bindsym $mod+space focus mode_toggle
@@ -90,7 +90,7 @@ bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
 bindsym $mod+f fullscreen
 
-mode "resize" {
+mode resize {
   bindsym $left resize shrink width 10px
   bindsym $down resize grow height 10px
   bindsym $up resize shrink height 10px
@@ -103,7 +103,7 @@ mode "resize" {
   bindsym escape mode default
   bindsym return mode default
 }
-bindsym $mod+r mode "resize"
+bindsym $mod+r mode resize
 
 bindsym --locked XF86AudioPlay exec playerctl --player playerctld play-pause
 bindsym --locked XF86AudioNext exec playerctl --player playerctld next
@@ -129,7 +129,7 @@ mode audio {
   bindsym escape mode default
   bindsym return mode default
 }
-bindsym $mod+o mode "audio"
+bindsym $mod+o mode audio
 
 
 bindsym --locked XF86MonBrightnessDown exec brightnessctl set 5%-
@@ -143,16 +143,16 @@ mode lumino {
   bindsym escape mode default
   bindsym return mode default
 }
-bindsym $mod+i mode "lumino"
+bindsym $mod+i mode lumino
 
 bindsym Print exec grim
 bindsym $mod+d exec fuzzel
-bindsym $mod+p exec fish -c tessen
+bindsym $mod+p exec PASSWORD_STORE_DIR=$HOME/Personal/pass/ tessen
 bindsym $mod+y exec firefox
 
 # unused
 bindsym $mod+c exec echo
-bindsym $mod+g exec echo
+bindsym $mod+g exec sh -c ~/.local/bin/run-waybar
 bindsym $mod+h exec echo
 bindsym $mod+m exec echo
 bindsym $mod+q exec echo
@@ -181,7 +181,8 @@ exec pipewire
 exec pactl set-sink-volume @DEFAULT_SINK@ 30%
 exec pactl set-sink-mute @DEFAULT_SINK@ 0
 # exec eval gnome-keyring-daemon --components=ssh,secrets,pkcs11 --start
-exec eval $(/usr/bin/gnome-keyring-daemon --start)
+exec /usr/bin/gnome-keyring-daemon --start
+
 exec waybar
 include ./ghostty
 include /etc/sway/config.d/*

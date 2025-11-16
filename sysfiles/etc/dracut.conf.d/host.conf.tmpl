@@ -4,7 +4,7 @@ compress=lz4
 uefi=yes
 early_microcode=yes
 CMDLINE=(
-  rd.luks.uuid={{ output "encrypted-block" | trim }}
+  rd.luks.uuid={{ output "/home/prncss/.local/bin/encrypted-block" | trim }}
   rd.lvm.lv=MyVolGroup/root
   rd.luks.allow-discards
   root=/dev/mapper/MyVolGroup-root

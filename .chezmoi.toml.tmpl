@@ -1,4 +1,6 @@
 {{- $hostname := promptStringOnce . "hostname" "hostname" -}}
+{{- $termux := promptBoolOnce . "termux" "Am I inside termux?" -}}
 
 [data]
     hostname = {{ $hostname | quote }}
+    termux = {{ $termux | quote }}
