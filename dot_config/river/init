@@ -94,9 +94,9 @@ riverctl map passthrough Super F10 enter-mode normal
 # not have a modifier
 for mode in normal locked; do
 	# Control pulse audio volume with pamixer (https://github.com/cdemoulins/pamixer)
-	riverctl map $mode None XF86AudioRaiseVolume spawn 'pamixer -i 5'
-	riverctl map $mode None XF86AudioLowerVolume spawn 'pamixer -d 5'
-	riverctl map $mode None XF86AudioMute spawn 'pamixer --toggle-mute'
+	riverctl map $mode None XF86AudioRaiseVolume spawn 'pactl set-sink-volume @DEFAULT_SINK@ +4%'
+	riverctl map $mode None XF86AudioLowerVolume spawn 'pactl set-sink-volume @DEFAULT_SINK@ -4%'
+	riverctl map $mode None XF86AudioMute spawn 'pactl set-sink-mute \@DEFAULT_SINK@ toggle'
 
 	# Control MPRIS aware media players with playerctl (https://github.com/altdesktop/playerctl)
 	riverctl map $mode None XF86AudioMedia spawn 'playerctl play-pause'
@@ -121,11 +121,13 @@ riverctl map audio None $UP spawn 'pactl set-sink-volume @DEFAULT_SINK@ +4%'
 riverctl map audio None $DOWN spawn 'pactl set-sink-volume @DEFAULT_SINK@ -4%'
 riverctl map audio Shif $UP spawn 'pactl set-sink-volume @DEFAULT_SINK@ +12%'
 riverctl map audio Shif $DOWN spawn 'pactl set-sink-volume @DEFAULT_SINK@ -12%'
-riverctl map audio None M spawn 'pamixer --toggle-mute'
+riverctl map audio None M spawn 'pactl set-sink-mute \@DEFAULT_SINK@ toggle'
 riverctl map audio None space spawn 'playerctl play-pause'
 riverctl map audio None $LEFT spawn 'playerctl previous'
 riverctl map audio None $RIGHT spawn 'playerctl next'
 riverctl map audio None x spawn 'playerctl stop'
+pactl set-sink-volume @DEFAULT_SINK@ 30%
+pactl set-sink-mute @DEFAULT_SINK@ 0
 
 riverctl declare-mode lumino
 riverctl map normal Super I enter-mode lumino
@@ -210,13 +212,12 @@ spawn_once swayidle -w \
          timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
          before-sleep 'waylock -fork-on-lock'
 
+
+dbus-update-activation-environment XDG_CURRENT_DESKTOP=sway WAYLAND_DISPLAY
 spawn_once /usr/bin/gnome-keyring-daemon --start
 spawn_once syncthing serve --no-browser --no-restart --logflags=0
 spawn_once udiskie
 spawn_once waybar
 
 gpg-connect-agent /bye
-
-# not working as a service
-# spawn_once wlsunset -l 45.5 -L -73.
 wlsunset -S 07:00 -s 16:00
