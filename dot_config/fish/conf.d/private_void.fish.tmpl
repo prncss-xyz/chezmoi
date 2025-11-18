@@ -1,8 +1,0 @@
-{{- if eq .chezmoi.os "linux" -}}
-set -x GRIM_DEFAULT_DIR $HOME/Media/Pictures/Captures
-set -x PERSONAL $HOME/Personal
-
-abbr pi sudo xbps-install -y
-abbr pr sudo xbps-remove -Ry
-abbr pu sudo xbps-install -Syu
-{{- end }}

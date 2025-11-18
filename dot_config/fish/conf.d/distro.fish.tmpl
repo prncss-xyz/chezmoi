@@ -1,0 +1,30 @@
+{{ if eq .chezmoi.os "android" -}}
+set -x BROWSER termux-open-url
+set -x PERSONAL "$HOME/storage/shared/Personal"
+
+abbr pi pkg install -y
+abbr pr pkg remove -Ry
+abbr pu pkg update && pkg upgrade
+abbr pdv pd sh void --user prncss
+abbr pda pd sh alpine --user prncss
+{{ end -}}
+{{ if eq .chezmoi.os "darwin" -}}
+abbr pi brew install
+abbr pr brew remove
+abbr pu brew update; brew upgrade; brew cleanup
+{{ end -}}
+
+{{ if eq .chezmoi.os "linux" -}}
+set -x GRIM_DEFAULT_DIR $HOME/Media/Pictures/Captures
+set -x PERSONAL $HOME/Personal
+{{ if eq .chezmoi.osRelease.name "Void" -}}
+abbr pi sudo xbps-install -y
+abbr pr sudo xbps-remove -Ry
+abbr pu sudo xbps-install -Syu
+{{ end -}}
+{{ if eq .chezmoi.osRelease.name "Apline" -}}
+abbr pi sudo apk add
+abbr pr sudo apk del
+abbr pu sudo apk update; sudo apk upgrade -U -a
+{{ end -}}
+{{ end -}}
