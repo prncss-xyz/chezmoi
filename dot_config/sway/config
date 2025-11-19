@@ -34,8 +34,7 @@ floating_modifier $mod normal
 bindsym $mod+Shift+c reload
 bindsym $mod+Shift+e exit
 bindsym $mod+ctrl+q exec swaylock
-bindsym ctrl+alt+delete exec loginctl reboot
-bindsym $mod+ctrl+backspace exec loginctl reboot
+bindsym $mod+ctrl+r exec loginctl reboot
 bindsym $mod+ctrl+p exec loginctl poweroff
 
 bindsym $mod+a focus parent

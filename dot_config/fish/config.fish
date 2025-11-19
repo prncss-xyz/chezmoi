@@ -21,7 +21,6 @@ if status is-interactive
   abbr cmdd chezmoi diff
 	abbr d ddgr --rev
 	abbr dw BROWSER=w3m ddgr --rev
-  abbr l eza --icons --git
   abbr n nvim
   abbr o xdg-open
   abbr t eza --tree --icons --git
